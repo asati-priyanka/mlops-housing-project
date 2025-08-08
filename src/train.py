@@ -31,12 +31,7 @@ def ensure_experiment(name: str) -> None:
 
 
 def train_and_log(
-    model_name: str,
-    model,
-    X_train,
-    X_test,
-    y_train,
-    y_test
+    model_name: str, model, X_train, X_test, y_train, y_test
 ) -> Tuple[str, Dict[str, float]]:
     with mlflow.start_run(run_name=model_name) as run:
         model.fit(X_train, y_train)

@@ -10,9 +10,16 @@ import pandas as pd
 
 # Feature order must match training
 FEATURES = [
-    "MedInc", "HouseAge", "AveRooms", "AveBedrms",
-    "Population", "AveOccup", "Latitude", "Longitude",
+    "MedInc",
+    "HouseAge",
+    "AveRooms",
+    "AveBedrms",
+    "Population",
+    "AveOccup",
+    "Latitude",
+    "Longitude",
 ]
+
 
 # Pydantic v2 models
 class HousingFeatures(BaseModel):
@@ -25,17 +32,21 @@ class HousingFeatures(BaseModel):
     Latitude: float
     Longitude: float
 
+
 class PredictRequest(BaseModel):
     records: List[HousingFeatures]
 
+
 class PredictResponse(BaseModel):
     predictions: List[float]
+
 
 app = FastAPI(title="Housing Predictor", version="0.1.0")
 
 # Load the best model by alias
 MODEL_URI = "models:/housing_best_model@best"
 _model: mlflow.pyfunc.PyFuncModel | None = None
+
 
 def get_model() -> mlflow.pyfunc.PyFuncModel:
     global _model
@@ -47,9 +58,11 @@ def get_model() -> mlflow.pyfunc.PyFuncModel:
             raise HTTPException(status_code=503, detail=f"Model load failed: {e}")
     return _model
 
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
 
 @app.post("/predict", response_model=PredictResponse)
 def predict(req: PredictRequest):
