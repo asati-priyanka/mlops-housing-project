@@ -1,0 +1,10 @@
+# MLflow local tracking
+mlflow.db
+mlruns/
+
+# Virtual env & logs
+.venv/
+*.log
+
+# Local helper files
+folder_tree.txt
