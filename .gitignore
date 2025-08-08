@@ -8,3 +8,13 @@ mlruns/
 
 # Local helper files
 folder_tree.txt
+# Helpers / dumps
+folder_tree.txt
+folder_structure*.txt
+
+# Jupyter cache
+.ipynb_checkpoints/
+
+# Processed data (we'll DVC track when needed)
+data/processed/
+
