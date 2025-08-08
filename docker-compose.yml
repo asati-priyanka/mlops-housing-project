@@ -1,0 +1,55 @@
+﻿version: "3.9"
+
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.2.0
+    container_name: housing_mlflow
+    command:
+      - mlflow
+      - server
+      - --backend-store-uri
+      - sqlite:////data/mlflow.db
+      - --serve-artifacts
+      - --artifacts-destination
+      - /data/mlruns
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5000"
+    ports:
+      - "5500:5000"
+    volumes:
+      - ./mlruns:/data/mlruns
+      - ./mlflow.db:/data/mlflow.db
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: housing_api
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  streamlit:
+    build:
+      context: .
+    # uses same Dockerfile; overridden command below
+      dockerfile: docker/Dockerfile
+    container_name: housing_streamlit
+    command: ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    depends_on:
+      - api
+    ports:
+      - "8501:8501"
+    restart: unless-stopped

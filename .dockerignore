@@ -1,0 +1,20 @@
+﻿# VCS
+.git
+.github
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Local data & artifacts
+mlruns/
+mlflow.db
+data/processed/
+
+# DVC cache (keep lightweight)
+.dvc/cache/
+
+# OS/editor noise
+.DS_Store
+.vscode/

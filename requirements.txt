@@ -18,3 +18,5 @@ python-dotenv>=1.0
 
 # Data versioning
 dvc>=3.50
+
+streamlit>=1.30
