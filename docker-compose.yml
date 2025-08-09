@@ -24,12 +24,16 @@ services:
     restart: unless-stopped
 
   api:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
+    image: asatipriyanka/housing-api:latest
+    # build:
+      # context: .
+      # dockerfile: docker/Dockerfile
     container_name: housing_api
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - LOG_DIR=/app/logs
+    volumes:
+      - ./logs:/app/logs
     depends_on:
       - mlflow
     ports:

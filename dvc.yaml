@@ -1,0 +1,8 @@
+stages:
+  train:
+    cmd: python -m src.train
+    deps:
+      - data/raw/california_housing.csv
+      - src/train.py
+    # outs:
+    #  - models/housing_best_model
