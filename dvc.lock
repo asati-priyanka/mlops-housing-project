@@ -1,0 +1,13 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python -m src.train
+    deps:
+    - path: data/raw/california_housing.csv
+      hash: md5
+      md5: cb6f587cb3e1d7c437d81868ae525896
+      size: 1915888
+    - path: src/train.py
+      hash: md5
+      md5: d2a603b4aea12574e22fa2271967e430
+      size: 3507

@@ -27,4 +27,4 @@ logs/
 *.log
 
 # DVC lock file
-dvc.lock
+# dvc.lock
