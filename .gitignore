@@ -18,3 +18,13 @@ folder_structure*.txt
 # Processed data (we'll DVC track when needed)
 data/processed/
 
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs
+logs/
+*.log
+
+# DVC lock file
+dvc.lock

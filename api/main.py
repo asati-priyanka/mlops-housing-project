@@ -1,5 +1,5 @@
 ﻿from typing import List
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from pydantic import BaseModel, Field
 import mlflow
 import pandas as pd
@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import sqlite3
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 # NOTE: When you open a new terminal, remember:
 # .\.venv\Scripts\Activate.ps1
@@ -16,6 +17,11 @@ import sqlite3
 LOG_DIR = os.getenv("LOG_DIR", "logs")
 DB_PATH = os.path.join(LOG_DIR, "api.db")
 os.makedirs(LOG_DIR, exist_ok=True)
+
+# Prometheus metrics (minimal)
+PRED_REQUESTS = Counter("pred_requests_total", "Total prediction requests")
+PRED_ERRORS = Counter("pred_errors_total", "Total prediction errors")
+PRED_LATENCY = Histogram("pred_latency_seconds", "Prediction latency in seconds")
 
 # Feature order must match training
 FEATURES = [
@@ -108,6 +114,7 @@ def predict(req: PredictRequest):
     start = time.time()
     error_msg = None
     prediction_value = None
+    PRED_REQUESTS.inc()  # ### count request
 
     model = get_model()
 
@@ -120,10 +127,12 @@ def predict(req: PredictRequest):
         prediction_value = float(preds[0])
     except Exception as e:
         error_msg = str(e)
+        PRED_ERRORS.inc()  # ### count error
         # Surface input/schema issues nicely
         raise HTTPException(status_code=422, detail=f"Prediction failed: {e}")
     finally:
         latency_ms = (time.time() - start) * 1000.0
+        PRED_LATENCY.observe(latency_ms / 1000.0)  # ### record latency (seconds)
         feat = rows[0]
         try:
             DB.execute(
@@ -162,6 +171,11 @@ def metrics():
         "avg_latency_ms": round(avg_latency, 3),
         "sqlite_db": DB_PATH,
     }
+
+
+@app.get("/metrics/prom", include_in_schema=False)
+def metrics_prom():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 @app.on_event("shutdown")

@@ -20,3 +20,5 @@ python-dotenv>=1.0
 dvc>=3.50
 
 streamlit>=1.30
+
+prometheus-client>=0.20

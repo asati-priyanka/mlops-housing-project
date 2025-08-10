@@ -2,6 +2,7 @@
 import pandas as pd
 from typing import Tuple
 
+
 def load_housing(csv_path: Path) -> Tuple[pd.DataFrame, pd.Series]:
     df = pd.read_csv(csv_path)
     # California Housing (sklearn) target column:
